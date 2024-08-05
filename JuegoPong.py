@@ -14,6 +14,7 @@ Recursos=os.path.join(os.path.dirname(__file__),"imagenes")
 puntuacionUsuario = 0
 puntuacionIa = 0
 
+
 #clase de la pelota
 class pelotaPong:
     def __init__(self, pelotaFinal) -> None:
@@ -108,7 +109,6 @@ class raquetaPong:
             self.dir_y = diferencia
         else:
             self.dir_y = 0
-
     # Actualizar la posición de la raqueta
         self.y += self.dir_y
     # Asegurarse de que la raqueta no se salga de los límites
