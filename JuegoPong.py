@@ -108,7 +108,6 @@ class raquetaPong:
             self.dir_y = diferencia
         else:
             self.dir_y = 0
-
     # Actualizar la posición de la raqueta
         self.y += self.dir_y
     # Asegurarse de que la raqueta no se salga de los límites
