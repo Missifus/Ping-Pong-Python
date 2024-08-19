@@ -101,21 +101,33 @@ class raquetaPong:
             pelota.x = self.x - pelota.ancho
 #movimiento de la raquetaIa
     def moverIa(self, pelota):
-    # Ajustar la dirección de la raqueta según la posición de la pelota
-        diferencia = (pelota.y - (self.y + self.alto / 2)) * 0.2
-        if self.y + self.alto / 2 > pelota.y:
-            self.dir_y = diferencia
-        elif self.y + self.alto / 2 < pelota.y:
-            self.dir_y = diferencia
+    # Solo mover la raqueta si la pelota está en la mitad de la pantalla
+        if pelota.x > venHori / 2:
+            distancia_centro = (self.y + self.alto / 2) - pelota.y
+            if abs(distancia_centro) < 100:  # Si la pelota está cerca
+                diferencia = distancia_centro * 0.1  # Reducir la velocidad de ajuste
+                if random.random() > 0.05:  # 95% de probabilidad de moverse hacia la pelota
+                    self.dir_y = -diferencia
+                else:  # 5% de probabilidad de fallar
+                    self.dir_y = diferencia
+            else:  # Mantenerse en el centro
+                diferencia = (self.y + self.alto / 2 - venVert / 2) * 0.01  # Reducir la velocidad de ajuste
+                self.dir_y = -diferencia
+
+        # Actualizar la posición de la raqueta de manera más suave
+            self.y += self.dir_y * 0.5  # Ajustar el factor de suavidad
+
+        # Asegurarse de que la raqueta no se salga de los límites
+            if self.y <= 0:
+                self.y = 0
+            elif self.y + self.alto >= venVert:
+                self.y = venVert - self.alto
         else:
-            self.dir_y = 0
-    # Actualizar la posición de la raqueta
-        self.y += self.dir_y
-    # Asegurarse de que la raqueta no se salga de los límites
-        if self.y <= 0:
-            self.y = 0
-        elif self.y + self.alto >= venVert:
-            self.y = venVert - self.alto
+        # Mantener la raqueta en el centro si la pelota no está en la mitad de la pantalla
+            diferencia = (self.y + self.alto / 2 - venVert / 2) * 0.05
+            self.y += -diferencia * 0.5
+
+
 #funcion que muestra la puntuacion
 def mostrarPuntuacion(ventana, fuente, puntuacionUsuario, puntuacionIa):
         texto_usuario = fuente.render(f'Usuario: {puntuacionUsuario}', True, negro)
