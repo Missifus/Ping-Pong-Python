@@ -14,7 +14,6 @@ Recursos=os.path.join(os.path.dirname(__file__),"imagenes")
 puntuacionUsuario = 0
 puntuacionIa = 0
 
-
 #clase de la pelota
 class pelotaPong:
     def __init__(self, pelotaFinal) -> None:
@@ -101,21 +100,14 @@ class raquetaPong:
             pelota.x = self.x - pelota.ancho
 #movimiento de la raquetaIa
     def moverIa(self, pelota):
-    # Solo mover la raqueta si la pelota está en la mitad de la pantalla
-        if pelota.x > venHori / 2:
-            distancia_centro = (self.y + self.alto / 2) - pelota.y
-            if abs(distancia_centro) < 100:  # Si la pelota está cerca
-                diferencia = distancia_centro * 0.1  # Reducir la velocidad de ajuste
-                if random.random() > 0.05:  # 95% de probabilidad de moverse hacia la pelota
-                    self.dir_y = -diferencia
-                else:  # 5% de probabilidad de fallar
-                    self.dir_y = diferencia
-            else:  # Mantenerse en el centro
-                diferencia = (self.y + self.alto / 2 - venVert / 2) * 0.01  # Reducir la velocidad de ajuste
-                self.dir_y = -diferencia
+        velocidad_fija = 5  # Define la velocidad fija
 
-        # Actualizar la posición de la raqueta de manera más suave
-            self.y += self.dir_y * 0.5  # Ajustar el factor de suavidad
+    # Solo mover la raqueta si la pelota está en el cuarto derecho de la pantalla
+        if pelota.x > 3 * venHori / 4:
+            if self.y + self.alto / 2 < pelota.y:
+                self.y += velocidad_fija
+            elif self.y + self.alto / 2 > pelota.y:
+                self.y -= velocidad_fija
 
         # Asegurarse de que la raqueta no se salga de los límites
             if self.y <= 0:
@@ -123,11 +115,17 @@ class raquetaPong:
             elif self.y + self.alto >= venVert:
                 self.y = venVert - self.alto
         else:
-        # Mantener la raqueta en el centro si la pelota no está en la mitad de la pantalla
-            diferencia = (self.y + self.alto / 2 - venVert / 2) * 0.05
-            self.y += -diferencia * 0.5
+        # Mantener la raqueta en el centro si la pelota no está en el cuarto derecho de la pantalla
+            if self.y + self.alto / 2 < venVert / 2:
+                self.y += velocidad_fija
+            elif self.y + self.alto / 2 > venVert / 2:
+                self.y -= velocidad_fija
 
-
+        # Asegurarse de que la raqueta no se salga de los límites
+            if self.y <= 0:
+                self.y = 0
+            elif self.y + self.alto >= venVert:
+                self.y = venVert - self.alto
 #funcion que muestra la puntuacion
 def mostrarPuntuacion(ventana, fuente, puntuacionUsuario, puntuacionIa):
         texto_usuario = fuente.render(f'Usuario: {puntuacionUsuario}', True, negro)
@@ -151,8 +149,11 @@ def main():
     global puntuacionUsuario, puntuacionIa
     puntuacionUsuario = 0
     puntuacionIa = 0
+    velocidadUsuario = 7
     #Bucle main
     partida=True
+    fondo = pygame.image.load(os.path.join(Recursos, "OIG4.jpg"))
+    fondo = pygame.transform.scale(fondo, (venHori, venVert)) 
     while partida:
  # Lógica del juego
         pelota.movimiento()
@@ -162,7 +163,7 @@ def main():
         raqueta2.moverIa(pelota)
         raqueta2.golpearIa(pelota)
 #dibujar en pantalla
-        ventana.fill(blanco)
+        ventana.blit(fondo, (0, 0))
         ventana.blit(pelota.imagen,(pelota.x, pelota.y))
         ventana.blit(raqueta1.imagen, (raqueta1.x, raqueta1.y))
         ventana.blit(raqueta2.imagen, (raqueta2.x, raqueta2.y))
@@ -171,21 +172,25 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 partida  = False
-
             #ingreso del usuario  mediante el teclado
             #detecta que se pulso una tecla
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
-                    raqueta1.dir_y = -7
+                    raqueta1.dir_y = -velocidadUsuario
                 if event.key == pygame.K_s:
-                    raqueta1.dir_y = 7
+                    raqueta1.dir_y = velocidadUsuario
             #detecta que se dejo de pulsar la tecla
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_w or event.key == pygame.K_s:
                     raqueta1.dir_y = 0
-                if event.key == pygame.K_s:
-                    raqueta1.dir_y = 0
+            # Actualizar la posición de la raqueta del usuario
+        raqueta1.y += raqueta1.dir_y
 
+        # Asegurarse de que la raqueta no se salga de los límites
+        if raqueta1.y <= 0:
+            raqueta1.y = 0
+        elif raqueta1.y + raqueta1.alto >= venVert:
+            raqueta1.y = venVert - raqueta1.alto
         pygame.display.flip()
         pygame.time.Clock().tick(fps)
     pygame.quit()
