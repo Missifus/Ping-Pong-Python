@@ -100,15 +100,13 @@ class raquetaPong:
             pelota.x = self.x - pelota.ancho
 #movimiento de la raquetaIa
     def moverIa(self, pelota):
-        velocidad_fija = 5  # Define la velocidad fija
-
+        velocidad_fija = 6
     # Solo mover la raqueta si la pelota está en el cuarto derecho de la pantalla
         if pelota.x > 3 * venHori / 4:
             if self.y + self.alto / 2 < pelota.y:
                 self.y += velocidad_fija
             elif self.y + self.alto / 2 > pelota.y:
                 self.y -= velocidad_fija
-
         # Asegurarse de que la raqueta no se salga de los límites
             if self.y <= 0:
                 self.y = 0
@@ -120,7 +118,6 @@ class raquetaPong:
                 self.y += velocidad_fija
             elif self.y + self.alto / 2 > venVert / 2:
                 self.y -= velocidad_fija
-
         # Asegurarse de que la raqueta no se salga de los límites
             if self.y <= 0:
                 self.y = 0
