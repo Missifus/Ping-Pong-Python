@@ -99,4 +99,5 @@ El juego de Pong es un clásico juego de arcade en el que dos jugadores controla
 made with love by Missifus <3
 
 ## diagrama de flujo.
+
 <img width="614" alt="diagrama de flujo" src="https://github.com/user-attachments/assets/ab976621-46b6-4362-b6fa-72d56a576a94">
