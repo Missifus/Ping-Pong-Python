@@ -149,6 +149,31 @@ def mostrarPuntuacion(ventana, fuente, puntuacionUsuario, puntuacionIa):
     ventana.blit(texto_usuario, pos_usuario)
     ventana.blit(texto_ia, pos_ia)
 
+# Funciones de control de música
+def reproducirMusica():
+    pygame.mixer.music.play(-1)  # Repetir indefinidamente
+
+def pausarMusica():
+    pygame.mixer.music.pause()
+
+def reanudarMusica():
+    pygame.mixer.music.unpause()
+
+def detenerMusica():
+    pygame.mixer.music.stop()
+
+def subirVolumen():
+    volumen_actual = pygame.mixer.music.get_volume()
+    nuevo_volumen = min(volumen_actual + 0.1, 1.0)  # Aumentar el volumen en 0.1, máximo 1.0
+    pygame.mixer.music.set_volume(nuevo_volumen)
+
+def bajarVolumen():
+    volumen_actual = pygame.mixer.music.get_volume()
+    nuevo_volumen = max(volumen_actual - 0.1, 0.0)  # Disminuir el volumen en 0.1, mínimo 0.0
+    pygame.mixer.music.set_volume(nuevo_volumen)
+
+def silenciarMusica():
+    pygame.mixer.music.set_volume(0.0)  # Silenciar la música
 def eventos():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -156,6 +181,18 @@ def eventos():
         if event.type == pygame.KEYDOWN:
             if event.key in teclas:
                 teclas[event.key] = True
+            if event.key == pygame.K_p:  # Pausar música
+                pausarMusica()
+            if event.key == pygame.K_r:  # Reanudar música
+                reanudarMusica()
+            if event.key == pygame.K_m:  # Detener música
+                detenerMusica()
+            if event.key == pygame.K_UP:  # Subir volumen
+                subirVolumen()
+            if event.key == pygame.K_DOWN:  # Bajar volumen
+                bajarVolumen()
+            if event.key == pygame.K_0:  # Silenciar música
+                silenciarMusica()
         if event.type == pygame.KEYUP:
             if event.key in teclas:
                 teclas[event.key] = False
@@ -169,6 +206,55 @@ def actualizarRaqueta(raqueta1, velocidadUsuario):
     else:
         raqueta1.dir_y = 0
     raqueta1.mover()
+
+def pantallaInicio(ventana, fuente):
+    ventana.fill((0, 0, 0))  # Fondo negro
+    
+    # Mensajes de bienvenida y controles
+    mensaje_bienvenida = fuente.render('¡Bienvenido al Juego Pong!', True, (255, 255, 255))
+    mensaje_inicio = fuente.render('Presiona cualquier tecla para iniciar', True, (255, 255, 255))
+    
+    # Fuente más pequeña para los controles
+    fuente_controles = pygame.font.Font(os.path.join('recursos', 'PixelSport-nRVRV.ttf'), 30)
+    mensaje_controles = fuente_controles.render('Controles:', True, (255, 255, 255))
+    mensaje_w = fuente_controles.render('W - Mover arriba', True, (255, 255, 255))
+    mensaje_s = fuente_controles.render('S - Mover abajo', True, (255, 255, 255))
+    mensaje_p = fuente_controles.render('P - Pausar música', True, (255, 255, 255))
+    mensaje_r = fuente_controles.render('R - Reanudar música', True, (255, 255, 255))
+    mensaje_up = fuente_controles.render('Flecha arriba - Subir volumen', True, (255, 255, 255))
+    mensaje_down = fuente_controles.render('Flecha abajo - Bajar volumen', True, (255, 255, 255))
+    mensaje_0 = fuente_controles.render('0 - Silenciar música', True, (255, 255, 255))
+    
+    # Posicionar los mensajes en la pantalla
+    ventana.blit(mensaje_bienvenida, (venHori / 2 - mensaje_bienvenida.get_width() / 2, venVert / 2 - mensaje_bienvenida.get_height() / 2 - 150))
+    ventana.blit(mensaje_inicio, (venHori / 2 - mensaje_inicio.get_width() / 2, venVert / 2 - mensaje_inicio.get_height() / 2 - 100))
+    ventana.blit(mensaje_controles, (venHori / 2 - mensaje_controles.get_width() / 2, venVert / 2 - mensaje_controles.get_height() / 2))
+    ventana.blit(mensaje_w, (venHori / 2 - mensaje_w.get_width() / 2, venVert / 2 - mensaje_w.get_height() / 2 + 40))
+    ventana.blit(mensaje_s, (venHori / 2 - mensaje_s.get_width() / 2, venVert / 2 - mensaje_s.get_height() / 2 + 80))
+    ventana.blit(mensaje_p, (venHori / 2 - mensaje_p.get_width() / 2, venVert / 2 - mensaje_p.get_height() / 2 + 120))
+    ventana.blit(mensaje_r, (venHori / 2 - mensaje_r.get_width() / 2, venVert / 2 - mensaje_r.get_height() / 2 + 160))
+    ventana.blit(mensaje_up, (venHori / 2 - mensaje_up.get_width() / 2, venVert / 2 - mensaje_up.get_height() / 2 + 200))
+    ventana.blit(mensaje_down, (venHori / 2 - mensaje_down.get_width() / 2, venVert / 2 - mensaje_down.get_height() / 2 + 240))
+    ventana.blit(mensaje_0, (venHori / 2 - mensaje_0.get_width() / 2, venVert / 2 - mensaje_0.get_height() / 2 + 280))
+    
+    pygame.display.flip()
+    
+    esperando = True
+    while esperando:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                esperando = False
+
+def pantallaFin(ventana, fuente, ganador):
+    ventana.fill((0, 0, 0))  # Fondo negro
+    mensaje = fuente.render(f'{ganador} gana!', True, (255, 255, 255))
+    ventana.blit(mensaje, (venHori / 2 - mensaje.get_width() / 2, venVert / 2 - mensaje.get_height() / 2))
+    pygame.display.flip()
+    pygame.time.wait(3000)  # Esperar 3 segundos antes de cerrar
+
 #funcion principal
 def main():
     #iniciamos la superficie de la ventana
@@ -188,9 +274,13 @@ def main():
     fondo = pygame.image.load(os.path.join(Recursos, "miau5.png"))
     fondo = pygame.transform.scale(fondo, (venHori, venVert)) 
     reloj = pygame.time.Clock()
-     # Cargar y reproducir música
+    # Cargar y reproducir música
     pygame.mixer.music.load(os.path.join(Recursos, "pong-pong-193380.mp3"))
-    pygame.mixer.music.play(-1)  # Repetir indefinidamente
+    pygame.mixer.music.set_volume(0.5)  # Inicializar el volumen al 50%
+    # Mostrar pantalla de inicio
+    pantallaInicio(ventana, fuente)
+        # Reproducir música al iniciar el juego
+    reproducirMusica()
     #Bucle main
     while partida:
         # Lógica del juego
@@ -202,6 +292,13 @@ def main():
         raqueta1.golpear(pelota)
         raqueta2.moverIa(pelota)
         raqueta2.golpearIa(pelota)
+        # Verificar si alguien ha ganado
+        if puntuacionUsuario >= 14:
+            pantallaFin(ventana, fuente, 'Usuario')
+            partida = False
+        elif puntuacionIa >= 14:
+            pantallaFin(ventana, fuente, 'IA')
+            partida = False
         #dibujar en pantalla
         ventana.blit(fondo, (0, 0))
         ventana.blit(pelota.imagen, (pelota.x, pelota.y))
@@ -210,6 +307,7 @@ def main():
         mostrarPuntuacion(ventana, fuente, puntuacionUsuario, puntuacionIa)
         pygame.display.flip()  # Actualiza toda la pantalla
         reloj.tick(fps)
+    detenerMusica()
     pygame.quit()
 
 if __name__ == "__main__":
